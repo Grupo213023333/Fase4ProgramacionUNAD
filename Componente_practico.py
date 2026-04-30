@@ -1,12 +1,8 @@
 # ----------------------------------------------------------
-# Author: Brayan Monsalve
-# Exercise 5: Smart Devices Control System
+# Fase 4 - Sistema de Gestión de Servicios
 #
-# This program applies:
-# - Inheritance
-# - Polymorphism
-# - Method overloading (configurar)
-# - Central control of devices
+# Este programa aplica Programación Orientada a Objetos:
+# abstracción, herencia y polimorfismo.
 # ----------------------------------------------------------
 
 import ttkbootstrap as ttk
@@ -209,26 +205,4 @@ ttk.Button(ventana, text="Check Status", command=ver_estado).pack(pady=5)
 ttk.Button(ventana, text="Configure Device", bootstyle=INFO, command=configurar).pack(pady=10)
 
 ventana.mainloop()
-
-
-
-# ----------------------------------------------------------
-# EXAMPLE OF SYSTEM USE
-#
-# 1. The user clicks "Turn ON All"
-#     All devices are turned on (polymorphism applied)
-#
-# 2. The user clicks "Check Status"
-#     The system shows the state of each device
-#
-# 3. The user selects "Light" and configures:
-#    Mode = Night, Intensity = 80, Time = 22:00
-#     configurar("Night", "80", "22:00") (method overloading)
-#
-# 4. The user clicks "Turn OFF All"
-#     All devices are turned off
-#
-# This demonstrates inheritance, polymorphism,
-# and method overloading in the system.
-# ----------------------------------------------------------
 
