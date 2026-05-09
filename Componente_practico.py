@@ -1,208 +1,176 @@
 # ----------------------------------------------------------
+# Autor: Brayan Monsalve
 # Fase 4 - Sistema de Gestión de Servicios
 #
 # Este programa aplica Programación Orientada a Objetos:
 # abstracción, herencia y polimorfismo.
 # ----------------------------------------------------------
 
-import ttkbootstrap as ttk
-from ttkbootstrap.constants import *
-from tkinter import messagebox
+# Importamos módulo para clases abstractas
+from abc import ABC, abstractmethod
 
 
 # ----------------------------------------------------------
-# BASE CLASS: Dispositivo
+# CLASE ABSTRACTA: Entidad
+# Clase base para entidades del sistema
 # ----------------------------------------------------------
-class Dispositivo:
+class Entidad(ABC):
+
+    def __init__(self, nombre):
+        self._nombre = nombre  # Atributo protegido
+
+
+# ----------------------------------------------------------
+# CLASE: Cliente (hereda de Entidad)
+# ----------------------------------------------------------
+class Cliente(Entidad):
+
+    def __init__(self, nombre, documento):
+        super().__init__(nombre)  # Llama al constructor padre
+        self._documento = documento
+
+    # Método para mostrar información del cliente
+    def mostrar_info(self):
+        return f"Cliente: {self._nombre}, Documento: {self._documento}"
+
+
+# ----------------------------------------------------------
+# CLASE ABSTRACTA: Servicio
+# Define comportamiento común de servicios
+# ----------------------------------------------------------
+class Servicio(ABC):
 
     def __init__(self, nombre):
         self._nombre = nombre
-        self._estado = "OFF"
 
-    def encender(self):
-        self._estado = "ON"
-        return f"{self._nombre} turned ON"
+    # Método abstracto para calcular costo (polimorfismo)
+    @abstractmethod
+    def calcular_costo(self, duracion):
+        pass
 
-    def apagar(self):
-        self._estado = "OFF"
-        return f"{self._nombre} turned OFF"
-
-    # Polymorphic method
-    def status(self):
-        return f"{self._nombre} is {self._estado}"
-
-    # Method overloading simulated with optional parameters
-    def configurar(self, modo=None, intensidad=None, hora=None):
-        return f"{self._nombre} configured"
+    # Método abstracto para describir el servicio
+    @abstractmethod
+    def descripcion(self):
+        pass
 
 
 # ----------------------------------------------------------
-# CHILD CLASS: BombillaInteligente
+# CLASE: ServicioSala
 # ----------------------------------------------------------
-class BombillaInteligente(Dispositivo):
+class ServicioSala(Servicio):
 
-    def encender(self):
-        return "Light bulb ON 💡"
+    # Calcula el costo según la duración
+    def calcular_costo(self, duracion):
+        return duracion * 50
 
-    def apagar(self):
-        return "Light bulb OFF 💡"
-
-    def status(self):
-        return "Light bulb status checked"
-
-    def configurar(self, modo=None, intensidad=None, hora=None):
-        return f"Light configured: mode={modo}, intensity={intensidad}, time={hora}"
+    # Describe el servicio
+    def descripcion(self):
+        return "Servicio de reserva de sala"
 
 
 # ----------------------------------------------------------
-# CHILD CLASS: CortinaInteligente
+# CLASE: ServicioEquipo
 # ----------------------------------------------------------
-class CortinaInteligente(Dispositivo):
+class ServicioEquipo(Servicio):
 
-    def encender(self):
-        return "Curtain opened 🪟"
+    def calcular_costo(self, duracion):
+        return duracion * 30
 
-    def apagar(self):
-        return "Curtain closed 🪟"
-
-    def status(self):
-        return "Curtain status checked"
-
-    def configurar(self, modo=None, intensidad=None, hora=None):
-        return f"Curtain configured: mode={modo}, level={intensidad}, time={hora}"
+    def descripcion(self):
+        return "Servicio de alquiler de equipos"
 
 
 # ----------------------------------------------------------
-# CHILD CLASS: TermostatoInteligente
+# CLASE: ServicioAsesoria
 # ----------------------------------------------------------
-class TermostatoInteligente(Dispositivo):
+class ServicioAsesoria(Servicio):
 
-    def encender(self):
-        return "Thermostat ON 🌡"
+    def calcular_costo(self, duracion):
+        return duracion * 80
 
-    def apagar(self):
-        return "Thermostat OFF 🌡"
-
-    def status(self):
-        return "Thermostat status checked"
-
-    def configurar(self, modo=None, intensidad=None, hora=None):
-        return f"Thermostat configured: mode={modo}, temp={intensidad}, time={hora}"
+    def descripcion(self):
+        return "Servicio de asesoría"
 
 
 # ----------------------------------------------------------
-# CLASS: ControlCentral
-# Manages all devices
+# CLASE: Reserva
+# Representa una reserva realizada por un cliente
 # ----------------------------------------------------------
-class ControlCentral:
+class Reserva:
+
+    def __init__(self, cliente, servicio, duracion):
+        self._cliente = cliente
+        self._servicio = servicio
+        self._duracion = duracion
+        self._estado = "Pendiente"
+
+    # Confirma la reserva
+    def confirmar(self):
+        self._estado = "Confirmada"
+
+    # Cancela la reserva
+    def cancelar(self):
+        self._estado = "Cancelada"
+
+    # Procesa la reserva y calcula el costo total
+    def procesar(self):
+        costo = self._servicio.calcular_costo(self._duracion)
+        return f"Reserva para {self._cliente._nombre} - Total: ${costo}"
+
+
+# ----------------------------------------------------------
+# CLASE: Sistema
+# Gestiona clientes, servicios y reservas
+# ----------------------------------------------------------
+class Sistema:
 
     def __init__(self):
-        self.dispositivos = []
+        self.clientes = []
+        self.servicios = []
+        self.reservas = []
 
-    def agregar_dispositivo(self, dispositivo):
-        self.dispositivos.append(dispositivo)
+    # Agrega un cliente al sistema
+    def agregar_cliente(self, cliente):
+        self.clientes.append(cliente)
 
-    # Polymorphism: same method for all devices
-    def encender_todos(self):
-        return [d.encender() for d in self.dispositivos]
+    # Agrega un servicio al sistema
+    def agregar_servicio(self, servicio):
+        self.servicios.append(servicio)
 
-    def apagar_todos(self):
-        return [d.apagar() for d in self.dispositivos]
+    # Crea una reserva
+    def crear_reserva(self, reserva):
+        self.reservas.append(reserva)
 
-    def estado_general(self):
-        return [d.status() for d in self.dispositivos]
-
-
-# ----------------------------------------------------------
-# CREATE CONTROL SYSTEM
-# ----------------------------------------------------------
-control = ControlCentral()
-
-# Add devices
-control.agregar_dispositivo(BombillaInteligente("Light"))
-control.agregar_dispositivo(CortinaInteligente("Curtain"))
-control.agregar_dispositivo(TermostatoInteligente("Thermostat"))
+    # Muestra todas las reservas
+    def mostrar_reservas(self):
+        for r in self.reservas:
+            print(r.procesar())
 
 
 # ----------------------------------------------------------
-# GUI
+# PRUEBA BÁSICA (SIMULACIÓN)
 # ----------------------------------------------------------
-ventana = ttk.Window(themename="cosmo")
-ventana.title("Smart Home Control")
-ventana.geometry("500x450")
 
-ttk.Label(ventana, text="Select Device").pack(pady=5)
+# Crear sistema
+sistema = Sistema()
 
-combo = ttk.Combobox(
-    ventana,
-    values=["Light", "Curtain", "Thermostat"]
-)
-combo.pack()
+# Crear cliente
+cliente1 = Cliente("Brayan", "123")
 
-ttk.Label(ventana, text="Mode").pack()
-entry_mode = ttk.Entry(ventana)
-entry_mode.pack()
+# Crear servicios
+sala = ServicioSala("Sala")
+equipo = ServicioEquipo("Equipo")
+asesoria = ServicioAsesoria("Asesoria")
 
-ttk.Label(ventana, text="Intensity / Value").pack()
-entry_intensity = ttk.Entry(ventana)
-entry_intensity.pack()
+# Registrar datos en el sistema
+sistema.agregar_cliente(cliente1)
+sistema.agregar_servicio(sala)
 
-ttk.Label(ventana, text="Schedule Time").pack()
-entry_time = ttk.Entry(ventana)
-entry_time.pack()
+# Crear reserva
+reserva1 = Reserva(cliente1, sala, 2)
 
-resultado = ttk.Label(ventana, text="Status:")
-resultado.pack(pady=15)
+# Guardar reserva
+sistema.crear_reserva(reserva1)
 
-
-# ----------------------------------------------------------
-# FUNCTIONS
-# ----------------------------------------------------------
-def obtener_dispositivo(nombre):
-    for d in control.dispositivos:
-        if nombre.lower() in d._nombre.lower():
-            return d
-    return None
-
-
-def encender_todos():
-    mensajes = control.encender_todos()
-    resultado.config(text="\n".join(mensajes))
-
-
-def apagar_todos():
-    mensajes = control.apagar_todos()
-    resultado.config(text="\n".join(mensajes))
-
-
-def ver_estado():
-    mensajes = control.estado_general()
-    resultado.config(text="\n".join(mensajes))
-
-
-def configurar():
-    nombre = combo.get()
-    dispositivo = obtener_dispositivo(nombre)
-
-    if dispositivo is None:
-        messagebox.showerror("Error", "Select a device")
-        return
-
-    modo = entry_mode.get()
-    intensidad = entry_intensity.get()
-    hora = entry_time.get()
-
-    mensaje = dispositivo.configurar(modo, intensidad, hora)
-    resultado.config(text=mensaje)
-
-
-# ----------------------------------------------------------
-# BUTTONS
-# ----------------------------------------------------------
-ttk.Button(ventana, text="Turn ON All", bootstyle=SUCCESS, command=encender_todos).pack(pady=5)
-ttk.Button(ventana, text="Turn OFF All", bootstyle=DANGER, command=apagar_todos).pack(pady=5)
-ttk.Button(ventana, text="Check Status", command=ver_estado).pack(pady=5)
-ttk.Button(ventana, text="Configure Device", bootstyle=INFO, command=configurar).pack(pady=10)
-
-ventana.mainloop()
-
+# Mostrar resultado
+sistema.mostrar_reservas()
