@@ -174,3 +174,127 @@ sistema.crear_reserva(reserva1)
 
 # Mostrar resultado
 sistema.mostrar_reservas()
+
+# ----------------------------------------------------------
+# EXCEPCIONES PERSONALIZADAS
+# ----------------------------------------------------------
+
+# Error para clientes inválidos
+class ClienteInvalidoError(Exception):
+    pass
+
+
+# Error para reservas inválidas
+class ReservaError(Exception):
+    pass
+
+
+# ----------------------------------------------------------
+# VALIDACIONES EN CLIENTE
+# ----------------------------------------------------------
+
+class Cliente(Entidad):
+
+    def __init__(self, nombre, documento):
+
+        # Validar nombre vacío
+        if not nombre.strip():
+            raise ClienteInvalidoError(
+                "El nombre del cliente no puede estar vacío"
+            )
+
+        # Validar documento vacío
+        if not documento.strip():
+            raise ClienteInvalidoError(
+                "El documento no puede estar vacío"
+            )
+
+        super().__init__(nombre)
+        self._documento = documento
+
+    def mostrar_info(self):
+        return f"Cliente: {self._nombre}, Documento: {self._documento}"
+
+
+# ----------------------------------------------------------
+# VALIDACIONES EN RESERVA
+# ----------------------------------------------------------
+
+class Reserva:
+
+    def __init__(self, cliente, servicio, duracion):
+
+        # Validar duración
+        if duracion <= 0:
+            raise ReservaError(
+                "La duración debe ser mayor a cero"
+            )
+
+        self._cliente = cliente
+        self._servicio = servicio
+        self._duracion = duracion
+        self._estado = "Pendiente"
+
+    def confirmar(self):
+        self._estado = "Confirmada"
+
+    def cancelar(self):
+        self._estado = "Cancelada"
+
+    # Procesar reserva con manejo de errores
+    def procesar(self):
+
+        try:
+            costo = self._servicio.calcular_costo(
+                self._duracion
+            )
+
+        except Exception as e:
+
+            return f"Error al procesar reserva: {e}"
+
+        else:
+
+            return (
+                f"Reserva para "
+                f"{self._cliente._nombre} "
+                f"- Total: ${costo}"
+            )
+
+        finally:
+            print("Proceso de reserva finalizado")
+
+
+# ----------------------------------------------------------
+# PRUEBAS DE EXCEPCIONES
+# ----------------------------------------------------------
+
+try:
+
+    # Cliente inválido
+    cliente_error = Cliente("", "")
+
+except ClienteInvalidoError as e:
+
+    print(f"Error de cliente: {e}")
+
+finally:
+
+    print("Validación de cliente terminada")
+
+
+print("\n")
+
+
+try:
+
+    # Reserva inválida
+    reserva_error = Reserva(cliente1, sala, -2)
+
+except ReservaError as e:
+
+    print(f"Error de reserva: {e}")
+
+finally:
+
+    print("Validación de reserva terminada")
