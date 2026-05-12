@@ -298,3 +298,180 @@ except ReservaError as e:
 finally:
 
     print("Validación de reserva terminada")
+
+# ----------------------------------------------------------
+# MANEJO DE LOGS
+# Guarda errores en archivo de texto
+# ----------------------------------------------------------
+
+# Función para registrar errores
+def registrar_log(error):
+
+    archivo = open("logs.txt", "a", encoding="utf-8")
+
+    archivo.write(f"ERROR: {error}\n")
+
+    archivo.close()
+
+
+# ----------------------------------------------------------
+# SIMULACIÓN COMPLETA DEL SISTEMA
+# ----------------------------------------------------------
+
+print("\n")
+print("-------- SIMULACIÓN DEL SISTEMA --------")
+print("\n")
+
+
+# ----------------------------------------------------------
+# CASO 1 - Cliente válido
+# ----------------------------------------------------------
+
+try:
+
+    cliente2 = Cliente("Carlos", "456")
+
+    print(cliente2.mostrar_info())
+
+except Exception as e:
+
+    print(f"Error: {e}")
+
+    registrar_log(e)
+
+
+# ----------------------------------------------------------
+# CASO 2 - Cliente inválido
+# ----------------------------------------------------------
+
+try:
+
+    cliente_error = Cliente("", "")
+
+except Exception as e:
+
+    print(f"Error detectado: {e}")
+
+    registrar_log(e)
+
+
+# ----------------------------------------------------------
+# CASO 3 - Reserva válida
+# ----------------------------------------------------------
+
+try:
+
+    reserva2 = Reserva(cliente2, equipo, 3)
+
+    print(reserva2.procesar())
+
+except Exception as e:
+
+    print(f"Error: {e}")
+
+    registrar_log(e)
+
+
+# ----------------------------------------------------------
+# CASO 4 - Reserva inválida
+# ----------------------------------------------------------
+
+try:
+
+    reserva_error = Reserva(cliente2, asesoria, -5)
+
+except Exception as e:
+
+    print(f"Error detectado: {e}")
+
+    registrar_log(e)
+
+
+# ----------------------------------------------------------
+# CASO 5 - Confirmar reserva
+# ----------------------------------------------------------
+
+try:
+
+    reserva2.confirmar()
+
+    print("Reserva confirmada")
+
+except Exception as e:
+
+    print(f"Error: {e}")
+
+    registrar_log(e)
+
+
+# ----------------------------------------------------------
+# CASO 6 - Cancelar reserva
+# ----------------------------------------------------------
+
+try:
+
+    reserva2.cancelar()
+
+    print("Reserva cancelada")
+
+except Exception as e:
+
+    print(f"Error: {e}")
+
+    registrar_log(e)
+
+
+# ----------------------------------------------------------
+# CASO 7 - Servicio de sala
+# ----------------------------------------------------------
+
+try:
+
+    print(sala.descripcion())
+
+except Exception as e:
+
+    registrar_log(e)
+
+
+# ----------------------------------------------------------
+# CASO 8 - Servicio de equipos
+# ----------------------------------------------------------
+
+try:
+
+    print(equipo.descripcion())
+
+except Exception as e:
+
+    registrar_log(e)
+
+
+# ----------------------------------------------------------
+# CASO 9 - Servicio de asesoría
+# ----------------------------------------------------------
+
+try:
+
+    print(asesoria.descripcion())
+
+except Exception as e:
+
+    registrar_log(e)
+
+
+# ----------------------------------------------------------
+# CASO 10 - Mostrar reservas registradas
+# ----------------------------------------------------------
+
+try:
+
+    sistema.mostrar_reservas()
+
+except Exception as e:
+
+    registrar_log(e)
+
+
+print("\n")
+print("Simulación finalizada")
